@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8"?>
+<widget id="TOF.advancedtreeview.AdvancedTreeView" pluginWidget="true" needsEntityContext="true" offlineCapable="true"
+        supportedPlatform="Web"
+        xmlns="http://www.mendix.com/widget/1.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.mendix.com/widget/1.0/ ../node_modules/mendix/custom_widget.xsd">
+    <name>Advanced Tree View</name>
+    <description>An advanced treeview widget for Mendix Studio Pro</description>
+    <icon/>
+    <properties>
+        <propertyGroup caption="General">
+            <propertyGroup caption="Data source">
+                <property key="datasource" type="datasource" isList="true" required="true">
+                    <caption>Data source</caption>
+                    <description>The list of items to display in the tree</description>
+                </property>
+                <property key="nodeIdAttribute" type="attribute" dataSource="datasource" required="true">
+                    <caption>Node ID attribute</caption>
+                    <description>Unique identifier for each node</description>
+                    <attributeTypes>
+                        <attributeType name="String"/>
+                        <attributeType name="Integer"/>
+                        <attributeType name="Long"/>
+                        <attributeType name="AutoNumber"/>
+                    </attributeTypes>
+                </property>
+                <property key="nodeLabelAttribute" type="attribute" dataSource="datasource" required="true">
+                    <caption>Node label attribute</caption>
+                    <description>Text to display for each node</description>
+                    <attributeTypes>
+                        <attributeType name="String"/>
+                    </attributeTypes>
+                </property>
+            </propertyGroup>
+            
+            <propertyGroup caption="Parent relation">
+                <property key="parentRelationType" type="enumeration" defaultValue="attribute">
+                    <caption>Parent relation type</caption>
+                    <description>How parent-child relationships are defined</description>
+                    <enumerationValues>
+                        <enumerationValue key="attribute">Parent ID attribute</enumerationValue>
+                        <enumerationValue key="association">Parent association</enumerationValue>
+                        <enumerationValue key="structureId">Structure ID (1.1.1)</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="parentIdAttribute" type="attribute" dataSource="datasource" required="false">
+                    <caption>Parent ID attribute</caption>
+                    <description>Reference to parent node ID (when using attribute relation)</description>
+                    <attributeTypes>
+                        <attributeType name="String"/>
+                        <attributeType name="Integer"/>
+                        <attributeType name="Long"/>
+                    </attributeTypes>
+                </property>
+                <property key="parentAssociation" type="association" dataSource="datasource" required="false">
+                    <caption>Parent association</caption>
+                    <description>Association to parent entity (when using association relation)</description>
+                </property>
+                <property key="structureIdAttribute" type="attribute" dataSource="datasource" required="false">
+                    <caption>Structure ID attribute</caption>
+                    <description>Hierarchical numbering like 1.1.1 (when using structure ID relation)</description>
+                    <attributeTypes>
+                        <attributeType name="String"/>
+                    </attributeTypes>
+                </property>
+            </propertyGroup>
+        </propertyGroup>
+
+        <propertyGroup caption="Display">
+            <propertyGroup caption="Appearance">
+                <property key="nodeContent" type="widgets" dataSource="datasource" required="false">
+                    <caption>Node content</caption>
+                    <description>Custom content to display for each node</description>
+                </property>
+                <property key="indentSize" type="integer" defaultValue="20">
+                    <caption>Indent size (px)</caption>
+                    <description>Indentation per level</description>
+                </property>
+                <property key="showLines" type="boolean" defaultValue="true">
+                    <caption>Show lines</caption>
+                    <description>Show connecting lines between nodes</description>
+                </property>
+                <property key="showIcons" type="boolean" defaultValue="true">
+                    <caption>Show icons</caption>
+                    <description>Show expand/collapse icons</description>
+                </property>
+                <property key="enableStickyHeaders" type="boolean" defaultValue="false">
+                    <caption>Enable sticky headers</caption>
+                    <description>Keep expanded parent nodes visible when scrolling</description>
+                </property>
+            </propertyGroup>
+
+            <propertyGroup caption="Icons">
+                <property key="expandIcon" type="icon" required="false">
+                    <caption>Expand icon</caption>
+                    <description>Icon shown for collapsed nodes (default: chevron right)</description>
+                </property>
+                <property key="collapseIcon" type="icon" required="false">
+                    <caption>Collapse icon</caption>
+                    <description>Icon shown for expanded nodes (default: chevron down)</description>
+                </property>
+                <property key="visibilityOnIcon" type="icon" required="false">
+                    <caption>Visibility on icon</caption>
+                    <description>Icon shown when node is visible (default: eye open)</description>
+                </property>
+                <property key="visibilityOffIcon" type="icon" required="false">
+                    <caption>Visibility off icon</caption>
+                    <description>Icon shown when node is hidden (default: eye closed)</description>
+                </property>
+                <property key="searchIcon" type="icon" required="false">
+                    <caption>Search icon</caption>
+                    <description>Icon shown in search input (default: magnifying glass)</description>
+                </property>
+            </propertyGroup>
+
+            <propertyGroup caption="Visibility">
+                <property key="enableVisibilityToggle" type="boolean" defaultValue="false">
+                    <caption>Enable visibility toggle</caption>
+                    <description>Allow users to hide/show nodes</description>
+                </property>
+                <property key="visibilityAttribute" type="attribute" dataSource="datasource" required="false">
+                    <caption>Visibility attribute</caption>
+                    <description>Boolean attribute controlling node visibility</description>
+                    <attributeTypes>
+                        <attributeType name="Boolean"/>
+                    </attributeTypes>
+                </property>
+                <property key="onVisibilityChange" type="action" required="false">
+                    <caption>On visibility change</caption>
+                    <description>Action to execute when visibility changes</description>
+                </property>
+            </propertyGroup>
+
+            <propertyGroup caption="Expansion">
+                <property key="expandMode" type="enumeration" defaultValue="multiple">
+                    <caption>Expand mode</caption>
+                    <description>Single or multiple branch expansion</description>
+                    <enumerationValues>
+                        <enumerationValue key="single">Single branch</enumerationValue>
+                        <enumerationValue key="multiple">Multiple branches</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="defaultExpandLevel" type="integer" defaultValue="0">
+                    <caption>Default expand level</caption>
+                    <description>Number of levels to expand by default (0 = collapsed)</description>
+                </property>
+                <property key="expandedAttribute" type="attribute" dataSource="datasource" required="false">
+                    <caption>Expanded attribute</caption>
+                    <description>Boolean attribute to persist expansion state</description>
+                    <attributeTypes>
+                        <attributeType name="Boolean"/>
+                    </attributeTypes>
+                </property>
+            </propertyGroup>
+        </propertyGroup>
+
+        <propertyGroup caption="Search &amp; Filter">
+            <propertyGroup caption="Search">
+                <property key="enableSearch" type="boolean" defaultValue="true">
+                    <caption>Enable search</caption>
+                    <description>Show search input</description>
+                </property>
+                <property key="searchMode" type="enumeration" defaultValue="client">
+                    <caption>Search mode</caption>
+                    <description>Where to perform search</description>
+                    <enumerationValues>
+                        <enumerationValue key="client">Client-side</enumerationValue>
+                        <enumerationValue key="server">Server-side</enumerationValue>
+                        <enumerationValue key="hybrid">Hybrid</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="searchAttributes" type="attribute" dataSource="datasource" isList="true" required="false">
+                    <caption>Search attributes</caption>
+                    <description>Attributes to search in</description>
+                    <attributeTypes>
+                        <attributeType name="String"/>
+                        <attributeType name="Integer"/>
+                        <attributeType name="Long"/>
+                        <attributeType name="Decimal"/>
+                        <attributeType name="Boolean"/>
+                        <attributeType name="DateTime"/>
+                        <attributeType name="Enum"/>
+                    </attributeTypes>
+                </property>
+                <property key="serverSearchAction" type="action" required="false">
+                    <caption>Server search action</caption>
+                    <description>Action for server-side search</description>
+                </property>
+                <property key="searchDebounce" type="integer" defaultValue="300">
+                    <caption>Search debounce (ms)</caption>
+                    <description>Delay before searching</description>
+                </property>
+            </propertyGroup>
+
+            <propertyGroup caption="Sorting">
+                <property key="sortAttribute" type="attribute" dataSource="datasource" required="false">
+                    <caption>Sort attribute</caption>
+                    <description>Attribute to sort children by</description>
+                    <attributeTypes>
+                        <attributeType name="String"/>
+                        <attributeType name="Integer"/>
+                        <attributeType name="Long"/>
+                        <attributeType name="Decimal"/>
+                        <attributeType name="DateTime"/>
+                    </attributeTypes>
+                </property>
+                <property key="sortOrder" type="enumeration" defaultValue="asc">
+                    <caption>Sort order</caption>
+                    <description>Ascending or descending</description>
+                    <enumerationValues>
+                        <enumerationValue key="asc">Ascending</enumerationValue>
+                        <enumerationValue key="desc">Descending</enumerationValue>
+                    </enumerationValues>
+                </property>
+            </propertyGroup>
+        </propertyGroup>
+
+        <propertyGroup caption="Selection">
+            <property key="selectionMode" type="enumeration" defaultValue="none">
+                <caption>Selection mode</caption>
+                <description>How nodes can be selected</description>
+                <enumerationValues>
+                    <enumerationValue key="none">None</enumerationValue>
+                    <enumerationValue key="single">Single</enumerationValue>
+                    <enumerationValue key="multiple">Multiple</enumerationValue>
+                </enumerationValues>
+            </property>
+            <property key="enableMultiSelect" type="boolean" defaultValue="true">
+                <caption>Enable multi-select</caption>
+                <description>Allow Ctrl/Shift selection</description>
+            </property>
+            <property key="selectionOutputType" type="enumeration" defaultValue="guids">
+                <caption>Selection output type</caption>
+                <description>What to pass for selected items</description>
+                <enumerationValues>
+                    <enumerationValue key="guids">GUIDs</enumerationValue>
+                    <enumerationValue key="attributes">Node ID attributes</enumerationValue>
+                    <enumerationValue key="structureIds">Structure IDs</enumerationValue>
+                </enumerationValues>
+            </property>
+            <property key="selectionOutputAttribute" type="attribute" required="false">
+                <caption>Selection output</caption>
+                <description>String attribute to store selection</description>
+                <attributeTypes>
+                    <attributeType name="String"/>
+                </attributeTypes>
+            </property>
+            <property key="onSelectionChange" type="action" required="false">
+                <caption>On selection change</caption>
+                <description>Action when selection changes</description>
+            </property>
+        </propertyGroup>
+
+        <propertyGroup caption="Actions">
+            <property key="onNodeClick" type="action" dataSource="datasource" required="false">
+                <caption>On node click</caption>
+                <description>Action when node is clicked</description>
+            </property>
+            <property key="onNodeHover" type="action" dataSource="datasource" required="false">
+                <caption>On node hover</caption>
+                <description>Action when node is hovered</description>
+            </property>
+            <property key="contextMenuActions" type="object" isList="true" required="false">
+                <caption>Context menu actions</caption>
+                <description>Right-click menu actions</description>
+                <properties>
+                    <property key="label" type="textTemplate">
+                        <caption>Label</caption>
+                        <description>Menu item label</description>
+                    </property>
+                    <property key="action" type="action" dataSource="../datasource">
+                        <caption>Action</caption>
+                        <description>Action to execute</description>
+                    </property>
+                </properties>
+            </property>
+        </propertyGroup>
+
+        <propertyGroup caption="Performance">
+            <property key="virtualScrolling" type="boolean" defaultValue="true">
+                <caption>Virtual scrolling</caption>
+                <description>Enable for large datasets</description>
+            </property>
+            <property key="itemHeight" type="integer" defaultValue="32">
+                <caption>Item height (px)</caption>
+                <description>Height of each tree item</description>
+            </property>
+            <property key="overscan" type="integer" defaultValue="5">
+                <caption>Overscan count</caption>
+                <description>Extra items to render outside viewport</description>
+            </property>
+            <property key="lazyLoadChildren" type="boolean" defaultValue="false">
+                <caption>Lazy load children</caption>
+                <description>Load children on demand</description>
+            </property>
+            <property key="lazyLoadAction" type="action" dataSource="datasource" required="false">
+                <caption>Lazy load action</caption>
+                <description>Action to load children</description>
+            </property>
+        </propertyGroup>
+
+        <propertyGroup caption="Advanced">
+            <property key="enableKeyboardNavigation" type="boolean" defaultValue="true">
+                <caption>Enable keyboard navigation</caption>
+                <description>Navigate with arrow keys</description>
+            </property>
+            <property key="enableBreadcrumb" type="boolean" defaultValue="false">
+                <caption>Enable breadcrumb</caption>
+                <description>Show breadcrumb navigation</description>
+            </property>
+            <property key="enableUndoRedo" type="boolean" defaultValue="false">
+                <caption>Enable undo/redo</caption>
+                <description>Support undo/redo for actions</description>
+            </property>
+            <property key="debugMode" type="boolean" defaultValue="false">
+                <caption>Debug mode</caption>
+                <description>Show performance metrics</description>
+            </property>
+        </propertyGroup>
+    </properties>
+</widget>
